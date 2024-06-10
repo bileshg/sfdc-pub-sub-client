@@ -1,0 +1,10 @@
+avro==1.11.3
+certifi==2024.6.2
+charset-normalizer==3.3.2
+grpcio==1.64.1
+grpcio-tools==1.64.1
+idna==3.7
+protobuf==5.27.1
+python-dotenv==1.0.1
+requests==2.32.3
+urllib3==2.2.1
