@@ -1,11 +1,22 @@
 # Salesforce PUB/SUB Client
 
-This project is a Python application that uses the Salesforce PubSub API to subscribe to a topic, process the events received, and publish new events. It uses OAuth2 for authentication and Avro for encoding and decoding the event payloads.
+This project is a simple Python application that uses the Salesforce PubSub API to subscribe to a topic, process the events received, and publish new events. It uses OAuth2 for authentication and Avro for encoding and decoding the event payloads.
 
 ## Prerequisites
 
 - Python 3.10 or higher
 - Salesforce account with access to the PubSub API
+
+## Salesforce Configuration
+
+Before running the application, you need to configure your Salesforce account:
+
+1. Create a new Connected App in Salesforce. This will provide you with the `Consumer Key` and `Consumer Secret` needed for OAuth2 authentication.
+2. Make sure that the Connected App has the required application permissions.
+3. Enable Change Data Capture for the `Account` object in Salesforce.
+4. Create the `Account_Processed_Platform_Event__e` Platform Event with the following custom fields in Salesforce.
+   - `isSuccessful__c`: Checkbox
+   - `ProcessId__c`: Text(255)
 
 ## Installation
 
@@ -46,6 +57,8 @@ It also generates client and server code and protocol buffer code for populating
     SFDC_PASSWORD="<your_password>+<your_security_token>"
     SFDC_INTEGRAION_USER_ID="<your_integration_user_id>"
     ```
+
+Please replace `<your_consumer_key>`, `<your_consumer_secret>`, `<your_username>`, and `<your_password>+<your_security_token>` with your actual Salesforce credentials. The password should be your Salesforce password concatenated with your security token. `<your_integration_user_id>` should be the ID of the integration user in Salesforce that will be used to publish events.
 
 ## Usage
 

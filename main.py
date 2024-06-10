@@ -4,14 +4,22 @@ import uuid
 import grpc
 import requests
 import threading
+import logging
 import certifi
 import avro.io
 import avro.schema
 import pubsub_api_pb2 as pb2
 import pubsub_api_pb2_grpc as pb2_grpc
 from dotenv import load_dotenv
-from pprint import pprint
+from pprint import pformat
 from datetime import datetime
+
+# Set up logging
+logging.basicConfig(
+    format='%(asctime)s %(levelname)s %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S',
+    level=logging.DEBUG
+)
 
 # Load the environment variables
 load_dotenv()
@@ -233,26 +241,37 @@ def main():
             )
             stub = pb2_grpc.PubSubStub(channel)
 
-            print(f'Subscribing to {sub_topic}')
+            logging.info(f'Subscribing to {sub_topic}')
             substream = stub.Subscribe(
                 fetch_req_stream(sub_topic),
                 metadata=auth_metadata
             )
 
+            stop_after = 10  # Stop after 10 empty events
             for event in substream:
                 if event.events:
                     semaphore.release()
-                    print(f"# of events received: {len(event.events)}")
+                    logging.info(f"# of events received: {len(event.events)}")
                     for e in event.events:
-                        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Processing event: {e.event.id}")
+                        logging.info(f"Processing event: {e.event.id}")
                         decoded = process_event(stub, auth_metadata, e)
-                        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Decoded Payload:")
-                        pprint(decoded)
+                        logging.debug(pformat(decoded))
+                        logging.info(f"Publishing event against event {e.event.id}")
                         response = publish_event(stub, auth_metadata, decoded)
-                        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Published event:")
-                        pprint(response)
+                        logging.debug(pformat(response))
+                    stop_after = 10  # Reset the counter
                 else:
-                    print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] The subscription is active.")
+                    logging.info("The subscription is active.")
+                    stop_after -= 1  # Decrement the counter
+
+                # Log the latest replay ID
+                logging.info(f"Latest Replay ID: {event.latest_replay_id}")
+
+                # Check if we need to stop
+                if stop_after <= 0:
+                    break
+
+            logging.info("The subscription has ended.")
 
 
 if __name__ == '__main__':
