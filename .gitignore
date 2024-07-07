@@ -136,6 +136,7 @@ celerybeat.pid
 
 # Environments
 .env
+.env.*
 #.venv
 env/
 venv/
@@ -259,3 +260,5 @@ fabric.properties
 pubsub_api.proto
 pubsub_api_pb2.py
 pubsub_api_pb2_grpc.py
+
+*.dat

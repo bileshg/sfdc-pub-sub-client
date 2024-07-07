@@ -46,11 +46,10 @@ It also generates client and server code and protocol buffer code for populating
 
 ## Configuration
 
-1. Create an environment file `.env` in your project directory.
-2. Fill in your Salesforce credentials and other configuration details in the `.env` file. Example:
+1. Update the `config.ini` file with the configuration details.
+2. Create an environment file (say) `.env` in your project directory based on what you have in the `config.ini` file. The environment file should contain the Salesforce credentials and other configuration details. The application will read these values from the environment
+3. Following is an example of the `.env` file:
     ```dotenv
-    LOGIN_URL='https://login.salesforce.com/services/oauth2/token'
-    PUBSUB_API_ENDPOINT='api.pubsub.salesforce.com:7443'
     SFDC_CONSUMER_KEY="<your_consumer_key>"
     SFDC_CONSUMER_SECRET="<your_consumer_secret>"
     SFDC_USERNAME="<your_username>"
